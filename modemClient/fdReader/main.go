@@ -1,7 +1,6 @@
 package fdReader
 
 import (
-	"net"
 	"fmt"
 	"io"
 	"sync"
@@ -83,17 +82,3 @@ func New(readWriter io.ReadWriter) FdReader {
 	return fdReader
 }
 
-func main() {
-	if conn, err := net.Dial("tcp", "localhost:8082"); err==nil {
-		//response := make([]byte, 0)
-		//rr := bytes.NewBuffer(response)
-		//if _, err := conn.Read(response); err!=nil {
-		//	fmt.Println(err)
-		//}
-		//fmt.Println(io.Copy(rr, conn))
-		//fmt.Println(string(response))
-		r := New(conn)
-		ctx, _ := context.WithTimeout(context.Background(), time.Second*15)
-		fmt.Println(r.ReadUntilExpect(regexp.MustCompile(`(?m)^Login:`), time.Now(), ctx))
-	}
-}
