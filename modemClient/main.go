@@ -155,7 +155,7 @@ func New(hostname string, username string, password string) ModemClient {
 		Username: username,
 		Password: password,
 		IfaceChan: make(chan Iface, 100),
-		Interval: time.Second*10,
+		Interval: time.Second*30,
 		Cancel: cancelFunc,
 	}
 	go mc.Run(ctx)
