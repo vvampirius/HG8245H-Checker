@@ -136,10 +136,10 @@ func (self *ModemClient) getInterfaceValues(rawIfconfigOutput string, interfaceR
 		ifaceBytesRxpSubmatch := ifaceBytesRxp.FindStringSubmatch(iface)
 		if len(ifaceBytesRxpSubmatch) == 3 {
 			if i, err := strconv.Atoi(ifaceBytesRxpSubmatch[1]); err==nil {
-				_iface.RXBytes = i
+				_iface.RXBytes = i * 1000
 			}
 			if i, err := strconv.Atoi(ifaceBytesRxpSubmatch[2]); err==nil {
-				_iface.TXBytes = i
+				_iface.TXBytes = i * 1000
 			}
 		}
 	} else {

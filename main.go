@@ -7,12 +7,14 @@ import (
 	"bytes"
 	"os"
 	"os/exec"
+	"net/http"
+	"log"
 )
 
 const MODEM_HOSTNAME  = "192.168.100.1"
 const MODEM_USERNAME  = "root"
 const MODEM_PASSWORD  = "admin"
-
+const HTTP_LISTEN = "0.0.0.0:8357"
 
 type Collector struct {
 	Iface modemClient.Iface
@@ -57,11 +59,22 @@ func (self *Collector) ZabbixNotifier() {
 	}
 }
 
+func (self *Collector) IP(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()               // parse arguments, you have to call this by yourself
+	fmt.Printf("%s %s %s%s\n\n", r.Proto, r.Method, r.Host, r.RequestURI)
+	fmt.Println(r.Header)
+	fmt.Fprintf(w, "%s", self.Iface.Ip) // send data to client side
+}
+
 
 func main()  {
 	mc := modemClient.New(MODEM_HOSTNAME, MODEM_USERNAME, MODEM_PASSWORD)
 	collector := Collector{}
 	go collector.CollectorRoutine(mc.IfaceChan)
-	collector.ZabbixNotifier()
-
+	go collector.ZabbixNotifier()
+	http.HandleFunc("/ip", collector.IP)
+	err := http.ListenAndServe(HTTP_LISTEN, nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
